@@ -1,0 +1,55 @@
+= Markdown/AsciiDoc to Google Docs Converter
+
+A Google Apps Script that converts selected Markdown or AsciiDoc formatted text in Google Docs to native Google Docs formatting.
+
+== Features
+
+* Automatically detects Markdown or AsciiDoc format
+* Converts headers, bold, italic, code blocks, and links
+* Appears in the Extensions menu
+* Works with selected text in Google Docs
+
+== Installation
+
+1. Open a Google Docs document
+2. Go to Extensions → Apps Script
+3. Create a new project
+4. Copy the contents of `Code.gs` into the script editor
+5. Copy the contents of `appsscript.json` into the project settings (or configure manually)
+6. Save the project
+7. Reload the Google Docs document
+8. The "Markdown/AsciiDoc Converter" menu will appear in the Extensions menu
+
+== Usage
+
+1. Select the text you want to convert in your Google Docs document
+2. Go to Extensions → Markdown/AsciiDoc Converter → Convert Selected Text
+3. The script will automatically detect whether the text is Markdown or AsciiDoc and convert it accordingly
+
+== Supported Formatting
+
+=== Markdown
+
+* Headers: `# Header 1` through `###### Header 6`
+* Bold: `**bold text**` or `__bold text__`
+* Italic: `*italic text*` or `_italic text_`
+* Code: `` `code` ``
+* Links: `[link text](url)`
+
+=== AsciiDoc
+
+* Headers: `= Header 1` through `====== Header 6`
+* Bold: `**bold text**`
+* Italic: `*italic text*`
+* Code: `` `code` `` or ````code````
+* Links: `link:url[text]` or `url[text]`
+
+== Files
+
+* `Code.gs` - Main script file containing all conversion logic
+* `appsscript.json` - Apps Script project configuration
+
+== License
+
+MIT License
+
