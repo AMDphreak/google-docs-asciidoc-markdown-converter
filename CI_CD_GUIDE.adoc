@@ -5,6 +5,7 @@ This guide explains how to set up continuous integration and deployment (CI/CD) 
 == Overview
 
 With CI/CD configured, every time you push code to the `main` branch, GitHub Actions will automatically:
+
 1. Install the `clasp` CLI tool
 2. Authenticate with Google Apps Script
 3. Push your code to the Apps Script project
@@ -20,13 +21,62 @@ Before setting up CI/CD, you need:
 * A `.clasp.json` file in your repository (contains your project ID)
 * A clasp authentication token
 
-== Step 1: Install clasp Locally
+== Step 1: Install clasp
 
-First, install `clasp` on your local machine:
+You can install `clasp` either globally or locally in your project. Choose the option that works best for you:
+
+=== Option A: Global Installation (Recommended for Frequent Use)
+
+Install `clasp` globally so you can run it from any directory:
 
 ```bash
-npm install -g @google/clasp
+pnpm install -g @google/clasp
 ```
+
+**Note:** If you get an error about the global bin directory, run `pnpm setup` first. This configures pnpm's global bin directory and adds it to your PATH.
+
+**Pros:**
+
+* Can run `clasp` from any directory
+* Available system-wide
+* Simpler command: just `clasp login`, `clasp push`, etc.
+
+**Cons:**
+
+* Requires pnpm global bin directory setup (one-time)
+* Installed globally, not tied to project
+
+=== Option B: Local Installation (Recommended for Project-Specific Use)
+
+Install `clasp` as a dev dependency in your project:
+
+```bash
+pnpm add -D @google/clasp
+```
+
+Then run it using one of these methods:
+
+```bash
+# Using pnpm exec
+pnpm exec clasp login
+pnpm exec clasp push
+
+# Or using npx
+npx @google/clasp login
+npx @google/clasp push
+```
+
+**Pros:**
+* No global setup required
+* Version is locked to your project
+* Works immediately without pnpm global configuration
+* Better for team consistency
+
+**Cons:**
+* Need to prefix commands with `pnpm exec` or `npx`
+* Slightly longer commands
+
+**Recommendation:** If you use `clasp` frequently across multiple projects, use global installation. If you only need it for this project or want to avoid global setup, use local installation.
 
 == Step 2: Create or Link Your Apps Script Project
 
@@ -35,9 +85,15 @@ npm install -g @google/clasp
 If you don't have an Apps Script project yet:
 
 ```bash
+# If installed globally:
 clasp login
 clasp create --type docs --title "Markdown/AsciiDoc to Google Docs Converter"
 clasp push
+
+# If installed locally, prefix with pnpm exec or npx:
+pnpm exec clasp login
+pnpm exec clasp create --type docs --title "Markdown/AsciiDoc to Google Docs Converter"
+pnpm exec clasp push
 ```
 
 This will create a `.clasp.json` file in your repository.
@@ -59,8 +115,13 @@ If you already have an Apps Script project:
 
 3. Login and push:
 ```bash
+# If installed globally:
 clasp login
 clasp push
+
+# If installed locally, prefix with pnpm exec or npx:
+pnpm exec clasp login
+pnpm exec clasp push
 ```
 
 == Step 3: Get Your clasp Authentication Token
