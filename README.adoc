@@ -11,6 +11,8 @@ A Google Apps Script that converts selected Markdown or AsciiDoc formatted text 
 
 == Installation
 
+=== Manual Installation
+
 1. Open a Google Docs document
 2. Go to Extensions → Apps Script
 3. Create a new project
@@ -19,6 +21,10 @@ A Google Apps Script that converts selected Markdown or AsciiDoc formatted text 
 6. Save the project
 7. Reload the Google Docs document
 8. The "Markdown/AsciiDoc Converter" menu will appear in the Extensions menu
+
+=== Automated Installation with CI/CD
+
+For automated deployment using GitHub Actions, see `CI_CD_GUIDE.adoc` for complete setup instructions. This allows you to automatically push code changes to Apps Script when you push to your repository.
 
 == Usage
 
@@ -48,6 +54,12 @@ A Google Apps Script that converts selected Markdown or AsciiDoc formatted text 
 
 * `Code.gs` - Main script file containing all conversion logic
 * `appsscript.json` - Apps Script project configuration
+
+== Documentation
+
+* `README.adoc` - This file, basic usage and installation
+* `CI_CD_GUIDE.adoc` - Guide for setting up automated deployment with GitHub Actions
+* `PUBLISHING_GUIDE.adoc` - Complete guide for publishing to Google Workspace Marketplace
 
 == License
 

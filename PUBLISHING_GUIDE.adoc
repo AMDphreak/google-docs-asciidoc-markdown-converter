@@ -1,0 +1,220 @@
+= Publishing Guide: Google Docs Add-on
+
+This guide outlines what's required to publish this project as a Google Docs add-on on the Google Workspace Marketplace.
+
+== Current Status
+
+Your project is already structured as a Google Apps Script add-on with:
+* `Code.gs` - Main script with conversion functionality
+* `appsscript.json` - Apps Script manifest with OAuth scopes configured
+
+== CI/CD Setup (Optional but Recommended)
+
+Before publishing, consider setting up automated deployment using GitHub Actions. This allows you to automatically push code changes to Apps Script when you push to your repository.
+
+**Benefits:**
+* No manual copying of code to Apps Script editor
+* Automated deployments on every push to main
+* Version control integration
+* Reduced risk of deployment errors
+
+See `CI_CD_GUIDE.adoc` for complete setup instructions.
+
+**Note:** CI/CD pushes code to Apps Script but does NOT publish to the marketplace. You still need to create deployment versions manually in the Apps Script editor.
+
+== Requirements for Publishing
+
+=== 1. Google Cloud Project Setup
+
+* Create a standard Google Cloud project
+* Link the Google Cloud project to your Apps Script project
+* This is required for OAuth credentials and API management
+
+**Steps:**
+1. Go to https://console.cloud.google.com/
+2. Create a new project (or use existing)
+3. In Apps Script editor: Project Settings → Google Cloud Platform (GCP) Project → Set Project Number
+
+=== 2. OAuth Consent Screen Configuration
+
+You need to configure the OAuth consent screen in Google Cloud Console:
+
+**Required Information:**
+* App name: "Markdown/AsciiDoc to Google Docs Converter" (or your preferred name)
+* User support email
+* Developer contact information
+* App logo (optional but recommended)
+* Application home page URL
+* Privacy policy URL (required for public add-ons)
+* Terms of service URL (required for public add-ons)
+* Authorized domains
+* Scopes: Your app already requests:
+** `https://www.googleapis.com/auth/documents`
+** `https://www.googleapis.com/auth/documents.currentonly`
+
+**Steps:**
+1. Go to Google Cloud Console → APIs & Services → OAuth consent screen
+2. Choose User Type (Internal for organization-only, External for public)
+3. Fill in all required fields
+4. Add scopes
+5. Add test users (if External and not published)
+6. Submit for verification (if requesting sensitive scopes)
+
+=== 3. Privacy Policy and Terms of Service
+
+**Required for public add-ons:**
+* Privacy Policy URL - Must explain:
+** What data is collected
+** How data is used
+** Data storage and security
+** User rights
+* Terms of Service URL - Must include:
+** Usage terms
+** Liability disclaimers
+** User responsibilities
+
+**Note:** These can be hosted on GitHub Pages, your website, or any publicly accessible URL.
+
+=== 4. Add-on Manifest Updates
+
+Your `appsscript.json` may need additional fields for marketplace publication:
+
+**Current manifest:**
+```json
+{
+  "timeZone": "America/New_York",
+  "dependencies": {},
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/documents",
+    "https://www.googleapis.com/auth/documents.currentonly"
+  ]
+}
+```
+
+**Consider adding:**
+* `webapp` configuration (if you add a web app)
+* Additional metadata for marketplace
+
+=== 5. Code Improvements for Production
+
+**Error Handling:**
+* Add comprehensive error handling
+* User-friendly error messages
+* Logging for debugging
+
+**User Experience:**
+* Loading indicators for long operations
+* Success/error notifications
+* Better feedback when conversion completes
+
+**Testing:**
+* Test with various document sizes
+* Test edge cases (empty selections, malformed markdown, etc.)
+* Test with different Google account types
+
+=== 6. Marketplace Listing Information
+
+**Required for submission:**
+* Add-on name
+* Short description (80 characters max)
+* Detailed description
+* Category
+* Screenshots (at least 1, recommended 3-5)
+* Support URL
+* Privacy Policy URL
+* Terms of Service URL
+* Logo/icon (128x128px minimum)
+
+=== 7. Testing Requirements
+
+**Before submission:**
+* Test add-on installation
+* Test all menu functions
+* Test with different document types
+* Test with various markdown/asciidoc formats
+* Test error scenarios
+* Verify OAuth flow works correctly
+
+=== 8. Publication Process
+
+**Steps:**
+1. Ensure your code is in Apps Script:
+   * If using CI/CD: Code should already be pushed automatically
+   * If not using CI/CD: Manually copy `Code.gs` and configure `appsscript.json` in the Apps Script editor
+2. In Apps Script editor: Deploy → Manage deployments
+3. Create new deployment → Type: Add-on
+4. Fill in deployment details
+5. Submit to Google Workspace Marketplace
+6. Complete marketplace listing form
+7. Submit for review
+
+**Review Timeline:**
+* Typically 1-2 weeks for initial review
+* May require revisions based on feedback
+
+=== 9. Post-Publication
+
+**Maintenance:**
+* Monitor user feedback
+* Address bug reports
+* Update add-on as needed
+* Maintain privacy policy and terms of service
+
+**Updates:**
+* Push code changes (automatically via CI/CD if configured, or manually)
+* Create new deployment version in Apps Script editor
+* Update marketplace listing if needed
+* Submit updates for review
+
+== Checklist
+
+Before submitting, ensure:
+
+[ ] Google Cloud project created and linked
+[ ] OAuth consent screen configured
+[ ] Privacy policy URL created and accessible
+[ ] Terms of service URL created and accessible
+[ ] Code tested thoroughly
+[ ] Error handling implemented
+[ ] User experience polished
+[ ] Screenshots prepared
+[ ] Marketplace listing information ready
+[ ] Support contact information available
+
+== Resources
+
+* https://developers.google.com/workspace/add-ons/how-tos/publish-add-on-overview[Publishing Overview]
+* https://developers.google.com/workspace/add-ons/editors/docs[Extending Google Docs]
+* https://developers.google.com/apps-script/guides/docs[Apps Script Docs Guide]
+* https://developers.google.com/workspace/marketplace[Google Workspace Marketplace]
+
+== Estimated Timeline
+
+* Setup and configuration: 1-2 days
+* Privacy policy and terms creation: 1 day
+* Testing and refinement: 2-3 days
+* Marketplace listing preparation: 1 day
+* Review process: 1-2 weeks
+* **Total: 2-3 weeks** (mostly waiting for review)
+
+== Cost Considerations
+
+* Google Cloud Project: Free tier available
+* Apps Script hosting: Free
+* Marketplace listing: Free
+* OAuth verification: Free (unless requesting sensitive scopes that require verification)
+
+== Next Steps
+
+1. (Optional) Set up CI/CD for automated deployments (see `CI_CD_GUIDE.adoc`)
+2. Create privacy policy and terms of service documents
+3. Set up Google Cloud project
+4. Configure OAuth consent screen
+5. Enhance error handling in code
+6. Create screenshots for marketplace listing
+7. Prepare marketplace listing information
+8. Test thoroughly
+9. Submit for review
+

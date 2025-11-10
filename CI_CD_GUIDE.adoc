@@ -1,0 +1,294 @@
+= CI/CD Setup Guide: Automated Deployment to Apps Script
+
+This guide explains how to set up continuous integration and deployment (CI/CD) using GitHub Actions to automatically push code changes to Google Apps Script when you push to your main branch.
+
+== Overview
+
+With CI/CD configured, every time you push code to the `main` branch, GitHub Actions will automatically:
+1. Install the `clasp` CLI tool
+2. Authenticate with Google Apps Script
+3. Push your code to the Apps Script project
+
+This eliminates the need to manually copy code into the Apps Script editor.
+
+== Prerequisites
+
+Before setting up CI/CD, you need:
+
+* A GitHub repository with your Apps Script code
+* A Google Apps Script project (created via `clasp` or manually)
+* A `.clasp.json` file in your repository (contains your project ID)
+* A clasp authentication token
+
+== Step 1: Install clasp Locally
+
+First, install `clasp` on your local machine:
+
+```bash
+npm install -g @google/clasp
+```
+
+== Step 2: Create or Link Your Apps Script Project
+
+=== Option A: Create a New Project
+
+If you don't have an Apps Script project yet:
+
+```bash
+clasp login
+clasp create --type docs --title "Markdown/AsciiDoc to Google Docs Converter"
+clasp push
+```
+
+This will create a `.clasp.json` file in your repository.
+
+=== Option B: Link to Existing Project
+
+If you already have an Apps Script project:
+
+1. Get your project ID from the Apps Script editor URL:
+   `https://script.google.com/d/PROJECT_ID/edit`
+
+2. Create `.clasp.json` in your repository:
+```json
+{
+  "scriptId": "YOUR_PROJECT_ID_HERE",
+  "rootDir": "."
+}
+```
+
+3. Login and push:
+```bash
+clasp login
+clasp push
+```
+
+== Step 3: Get Your clasp Authentication Token
+
+You need to extract your authentication token for use in GitHub Actions:
+
+=== Method 1: Extract from .clasprc.json
+
+After running `clasp login`, your token is stored in `~/.clasprc.json` (or `%USERPROFILE%\.clasprc.json` on Windows).
+
+The file contains:
+```json
+{
+  "token": {
+    "access_token": "YOUR_ACCESS_TOKEN",
+    "refresh_token": "YOUR_REFRESH_TOKEN",
+    "scope": "...",
+    "token_type": "Bearer",
+    "expiry_date": 1234567890
+  }
+}
+```
+
+Copy the entire contents of this file.
+
+=== Method 2: Use Service Account (Recommended for Production)
+
+For better security, use a service account:
+
+1. Go to https://console.cloud.google.com/
+2. Create a service account
+3. Enable Apps Script API for the service account
+4. Download the service account key JSON file
+5. Share your Apps Script project with the service account email
+
+== Step 4: Configure GitHub Secrets
+
+1. Go to your GitHub repository
+2. Navigate to Settings → Secrets and variables → Actions
+3. Add the following secrets:
+
+**CLASP_TOKEN** (Required)::
+  The contents of your `~/.clasprc.json` file (or service account JSON)
+
+**CLASP_PROJECT_ID** (Optional)::
+  Your Apps Script project ID (only needed if not in `.clasp.json`)
+
+== Step 5: Create GitHub Actions Workflow
+
+Create `.github/workflows/deploy.yml` in your repository:
+
+```yaml
+name: Deploy to Apps Script
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Code.gs'
+      - 'appsscript.json'
+      - '.clasp.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install clasp
+        run: npm install -g @google/clasp
+      
+      - name: Authenticate clasp
+        run: |
+          mkdir -p ~/.config
+          echo '${{ secrets.CLASP_TOKEN }}' > ~/.config/.clasprc.json
+      
+      - name: Push to Apps Script
+        run: clasp push --force
+```
+
+== Step 6: Commit and Push
+
+1. Add `.clasp.json` to your repository (if not already there)
+2. Commit the workflow file:
+```bash
+git add .github/workflows/deploy.yml
+git commit -m "Add CI/CD workflow for Apps Script deployment"
+git push
+```
+
+3. The workflow will run automatically on the next push to `main`
+
+== Advanced Configuration
+
+=== Deploy Only on Tags/Releases
+
+To deploy only when you create a release:
+
+```yaml
+on:
+  push:
+    tags:
+      - 'v*'
+```
+
+=== Manual Deployment Approval
+
+To require manual approval before deploying:
+
+```yaml
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      # ... same steps as above
+```
+
+Then configure the `production` environment in GitHub with required reviewers.
+
+=== Deploy to Multiple Projects
+
+If you have staging and production Apps Script projects:
+
+```yaml
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - name: Authenticate clasp
+        run: |
+          echo '${{ secrets.CLASP_TOKEN_STAGING }}' > ~/.config/.clasprc.json
+      - name: Push to Staging
+        run: |
+          echo '{"scriptId": "${{ secrets.CLASP_PROJECT_ID_STAGING }}"}' > .clasp.json
+          clasp push --force
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Authenticate clasp
+        run: |
+          echo '${{ secrets.CLASP_TOKEN_PRODUCTION }}' > ~/.config/.clasprc.json
+      - name: Push to Production
+        run: |
+          echo '{"scriptId": "${{ secrets.CLASP_PROJECT_ID_PRODUCTION }}"}' > .clasp.json
+          clasp push --force
+```
+
+== Important Notes
+
+=== Deployment vs Publishing
+
+*CI/CD pushes code to Apps Script, but does NOT publish to the marketplace.*
+
+After the workflow pushes your code:
+1. Go to the Apps Script editor
+2. Create a new deployment version (Deploy → Manage deployments)
+3. Update the deployment if needed
+4. The new version will be available to users
+
+=== Security Considerations
+
+* Never commit `.clasprc.json` to your repository
+* Use GitHub Secrets for all sensitive tokens
+* Consider using service accounts for production deployments
+* Rotate tokens periodically
+* Use environment protection rules for production deployments
+
+=== Token Expiration
+
+OAuth tokens can expire. If deployments start failing:
+1. Run `clasp login` locally again
+2. Update the `CLASP_TOKEN` secret with the new token
+
+=== .clasp.json in Repository
+
+The `.clasp.json` file contains your project ID and is safe to commit. It does not contain sensitive credentials.
+
+== Troubleshooting
+
+=== Workflow Fails: "Authentication Error"
+
+* Verify your `CLASP_TOKEN` secret is correctly formatted JSON
+* Check that the token hasn't expired
+* Re-run `clasp login` and update the secret
+
+=== Workflow Fails: "Project not found"
+
+* Verify your project ID in `.clasp.json` is correct
+* Ensure the Apps Script project exists
+* Check that the authenticated account has access to the project
+
+=== Workflow Doesn't Trigger
+
+* Verify the workflow file is in `.github/workflows/`
+* Check that you're pushing to the `main` branch
+* Ensure the file paths in `paths:` match your actual files
+
+=== Push Succeeds but Changes Don't Appear
+
+* Changes are pushed to the Apps Script editor, not automatically deployed
+* You still need to create a new deployment version in the Apps Script editor
+* Check the Apps Script editor to verify the code was pushed
+
+== Resources
+
+* https://github.com/google/clasp[clasp GitHub Repository]
+* https://developers.google.com/apps-script/guides/clasp[clasp Documentation]
+* https://docs.github.com/en/actions[GitHub Actions Documentation]
+* https://developers.google.com/apps-script/api/how-tos/execute[Apps Script API]
+
+== Next Steps
+
+After setting up CI/CD:
+
+1. Test the workflow by pushing a small change
+2. Verify the code appears in the Apps Script editor
+3. Set up deployment versioning strategy
+4. Consider adding automated testing before deployment
+5. Configure notifications for deployment status
+
