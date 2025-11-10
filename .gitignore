@@ -13,3 +13,5 @@
 .DS_Store
 Thumbs.db
 
+# node.js stuff
+node_modules
