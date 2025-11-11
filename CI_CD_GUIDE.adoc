@@ -67,12 +67,14 @@ npx @google/clasp push
 ```
 
 **Pros:**
+
 * No global setup required
 * Version is locked to your project
 * Works immediately without pnpm global configuration
 * Better for team consistency
 
 **Cons:**
+
 * Need to prefix commands with `pnpm exec` or `npx`
 * Slightly longer commands
 
@@ -126,6 +128,36 @@ pnpm exec clasp push
 
 == Step 3: Get Your clasp Authentication Token
 
+You need to extract your authentication token for use in GitHub Actions.
+
+=== Understanding Google Cloud Projects
+
+Google Cloud projects are isolated containers that provide:
+
+* **Resource isolation**: Each project has its own resources (APIs, service accounts, etc.)
+* **Billing separation**: Each project can have its own billing account
+* **Permission boundaries**: Access control is scoped per project
+* **Organization structure**: Projects can belong to organizations or be standalone
+
+**For This Project:**
+
+Since this is a personal Google Docs/AsciiDoc converter tool, the cleanest approach is to:
+
+* **Create or use an existing "personal" project** - This keeps all your personal development tools together
+* Service accounts created in this project will only have access to resources you explicitly grant them
+* You can create multiple service accounts in the same project for different purposes
+
+**When to Create a New Project:**
+
+Create a new Google Cloud project if:
+* This tool will be used by an organization/team (not just personal use)
+* You need separate billing or compliance requirements
+* You want complete isolation from other projects
+
+For personal development tools, using your existing personal development project is the simplest and most practical approach.
+
+=== Authentication Methods
+
 You need to extract your authentication token for use in GitHub Actions:
 
 === Method 1: Extract from .clasprc.json
@@ -149,25 +181,105 @@ Copy the entire contents of this file.
 
 === Method 2: Use Service Account (Recommended for Production)
 
-For better security, use a service account:
+For better security and automated deployments, use a service account. A service account is a special Google account that represents an application (not a person) and is designed for server-to-server authentication.
 
-1. Go to https://console.cloud.google.com/
-2. Create a service account
-3. Enable Apps Script API for the service account
-4. Download the service account key JSON file
-5. Share your Apps Script project with the service account email
+**Step-by-Step Service Account Setup:**
+
+1. **Go to Google Cloud Console:**
+   Go to https://console.cloud.google.com/
+
+2. **Select a Project:**
+   Use the project dropdown at the top to select your project (e.g., your personal development project)
+
+3. **Navigate to Service Accounts:**
+   * Go to "IAM & Admin" → "Service Accounts"
+   * Or use the search bar and type "Service Accounts"
+
+4. **Create a Service Account:**
+   * Click "Create Service Account" (or "+ CREATE SERVICE ACCOUNT")
+   * Enter a name (e.g., "apps-script-deployer" or "googledocs-converter-deployer")
+   * Optionally add a description: "Service account for CI/CD deployment to Apps Script"
+   * Click "Create and Continue"
+
+5. **Grant Permissions (Optional):**
+   * For basic deployment, you can skip this step (permissions are handled via Apps Script sharing)
+   * If you want to grant project-level permissions, you can add roles here
+   * Click "Continue"
+
+6. **Grant Access to Users (Optional):**
+   * You can skip this step for CI/CD use
+   * Click "Done"
+
+7. **Enable Apps Script API:**
+   * In the Google Cloud Console, go to "APIs & Services" → "Library"
+   * Search for "Apps Script API"
+   * Click on it and press "Enable" (if not already enabled)
+
+8. **Create and Download Service Account Key:**
+   * Go back to "IAM & Admin" → "Service Accounts"
+   * Click on the service account you just created
+   * Go to the "Keys" tab
+   * Click "Add Key" → "Create new key"
+   * Select "JSON" format
+   * Click "Create"
+   * The JSON file will download automatically - **keep this file secure!**
+
+9. **Share Apps Script Project with Service Account:**
+   * Go to the Apps Script "My Projects" page: https://script.google.com/home/projects
+   * Find your Apps Script project in the list
+   * Click the vertical three-dot menu (`...`) next to your project
+   * Select "Share Doc + Script" from the menu
+   * In the downloaded JSON file, find the `client_email` field (looks like: `your-service-account@your-project.iam.gserviceaccount.com`)
+   * Add this email address to the Apps Script project sharing dialog
+   * Give it "Editor" access
+   * Click "Send" or "Share"
+
+10. **Use the JSON File as Your Token:**
+    The entire contents of the downloaded JSON file will be used as your `CLASP_TOKEN` secret in GitHub Actions
 
 == Step 4: Configure GitHub Secrets
 
+=== Adding Repository Secrets
+
 1. Go to your GitHub repository
-2. Navigate to Settings → Secrets and variables → Actions
-3. Add the following secrets:
+2. Navigate to Settings -> Secrets and variables -> Actions
+3. Decide which way to set up each secret:
++
+[cols="1a,3a"]
+|===
+h| Option
+h| Details
 
-**CLASP_TOKEN** (Required)::
-  The contents of your `~/.clasprc.json` file (or service account JSON)
+| **Repository Secrets (Recommended for Basic Setup):**
+| * Available to all workflows in the repository
+* Simpler to set up and use
+* No additional protection rules
+* Use for: General CI/CD deployments that don't need approval gates
 
-**CLASP_PROJECT_ID** (Optional)::
+| **Environment Secrets (Recommended for Production):**
+| * Scoped to a specific environment (e.g., `production`, `staging`)
+* Supports protection rules:
+** Required reviewers (manual approval before deployment)
+** Deployment branches (limit which branches can deploy)
+** Wait timer (delay before deployment)
+* Use for: Production deployments that need approval workflows
+|===
+
+4. Set up the following secrets:
+
+  * **CLASP_TOKEN** (Required) +  
+  The contents of your service account JSON file or `~/.clasprc.json` file
+
+  * **CLASP_PROJECT_ID** (Optional) +
   Your Apps Script project ID (only needed if not in `.clasp.json`)
+
+5. (Optional) Configure protection rules: +
+   If you chose environment secrets, you can optionally configure protection rules:
+   * **Required reviewers:** Add users/teams who must approve deployments
+   * **Deployment branches:** Restrict which branches can deploy (e.g., only `main`)
+   * **Wait timer:** Add a delay before deployment (e.g., 5 minutes)
+   
+   Note: Protection rules are only available for environment secrets. If you chose repository secrets, skip this step.
 
 == Step 5: Create GitHub Actions Workflow
 
@@ -213,12 +325,12 @@ jobs:
 
 1. Add `.clasp.json` to your repository (if not already there)
 2. Commit the workflow file:
++
 ```bash
 git add .github/workflows/deploy.yml
 git commit -m "Add CI/CD workflow for Apps Script deployment"
 git push
 ```
-
 3. The workflow will run automatically on the next push to `main`
 
 == Advanced Configuration
@@ -236,7 +348,7 @@ on:
 
 === Manual Deployment Approval
 
-To require manual approval before deploying:
+To require manual approval before deploying, use **Environment Secrets** and reference an environment in your workflow:
 
 ```yaml
 jobs:
@@ -247,7 +359,31 @@ jobs:
       # ... same steps as above
 ```
 
-Then configure the `production` environment in GitHub with required reviewers.
+**Setup Steps:**
+
+1. **Create the Environment:**
+   * Go to Settings → Secrets and variables → Actions
+   * Click the "Environments" tab
+   * Click "New environment"
+   * Enter a name (e.g., `production`)
+   * Click "Configure environment"
+
+2. **Add Environment Secrets:**
+   * In the environment configuration, add your secrets:
+     * `CLASP_TOKEN` - Your authentication token
+     * `CLASP_PROJECT_ID` - Your project ID (if needed)
+   * These will override repository secrets with the same name
+
+3. **Configure Protection Rules (Optional):**
+   * **Required reviewers:** Add users/teams who must approve deployments
+   * **Deployment branches:** Restrict which branches can deploy (e.g., only `main`)
+   * **Wait timer:** Add a delay before deployment (e.g., 5 minutes)
+
+4. **Update Your Workflow:**
+   * Add `environment: production` to your job (as shown above)
+   * The workflow will pause and wait for approval before deploying
+
+**Note:** When using environment secrets, they take precedence over repository secrets with the same name. This allows you to use different tokens for different environments (e.g., staging vs production).
 
 === Deploy to Multiple Projects
 
@@ -284,13 +420,50 @@ jobs:
 
 === Deployment vs Publishing
 
-*CI/CD pushes code to Apps Script, but does NOT publish to the marketplace.*
+*CI/CD pushes code to Apps Script, but does NOT automatically create versioned deployments or publish to the marketplace.*
 
-After the workflow pushes your code:
-1. Go to the Apps Script editor
-2. Create a new deployment version (Deploy → Manage deployments)
-3. Update the deployment if needed
-4. The new version will be available to users
+**Why Versioned Deployments Are Necessary:**
+
+According to the https://developers.google.com/apps-script/concepts/deployments[Apps Script deployment documentation], there are two types of deployments:
+
+* **Head deployments**: Always synced to the current project code (used for testing)
+* **Versioned deployments**: Connected to a specific project version (used for public consumption)
+
+For production use, you must create versioned deployments. This ensures users continue to use a stable version while you make changes and improvements to the code. Versioned deployments prevent users from experiencing breaking changes or bugs from untested code.
+
+**After CI/CD Pushes Your Code:**
+
+1. **Test Your Changes:**
+   * Go to the Apps Script editor: https://script.google.com/
+   * Test your code using the head deployment (current code)
+   * Verify everything works as expected
+
+2. **Create a Version (if needed):**
+   * In the Apps Script editor, click **Deploy** → **Manage deployments**
+   * Click **New version** (if you need to create a new version)
+   * Enter a description for the version
+   * Click **Save**
+   * Note: You can also create a version directly when creating a new deployment
+
+3. **Create a Versioned Deployment:**
+   * In the Apps Script editor, click **Deploy** → **New deployment**
+   * Next to **Select type**, click **Enable deployment types** (if needed)
+   * Select the deployment type (Add-on, Web app, API Executable, etc.)
+   * Select the version number you want to deploy
+   * Enter a description for this deployment
+   * Click **Deploy**
+
+4. **Update an Existing Versioned Deployment:**
+   After you've tested and stabilized your code:
+   * Go to **Deploy** → **Manage deployments**
+   * Select the active deployment you want to update
+   * Click **Edit** (pencil icon)
+   * Change the version to the new version number you want to use
+   * Update the description if needed
+   * Click **Deploy**
+   * The new version will automatically be used by all users of that deployment
+
+**Important:** Always test your code thoroughly before updating a versioned deployment, as all users of that deployment will immediately receive the new version.
 
 === Security Considerations
 
@@ -347,9 +520,10 @@ The `.clasp.json` file contains your project ID and is safe to commit. It does n
 
 After setting up CI/CD:
 
-1. Test the workflow by pushing a small change
-2. Verify the code appears in the Apps Script editor
-3. Set up deployment versioning strategy
-4. Consider adding automated testing before deployment
-5. Configure notifications for deployment status
+1. **Test the workflow:** Push a small change to trigger the CI/CD pipeline
+2. **Verify code deployment:** Check that the code appears in the Apps Script editor
+3. **Test your changes:** Use the head deployment to test your code (see <<Deployment vs Publishing>>)
+4. **Create your first versioned deployment:** Follow the steps in <<Deployment vs Publishing>> to create a versioned deployment for production use
+5. **Consider adding automated testing:** Add tests that run before deployment to catch issues early
+6. **Configure notifications:** Set up GitHub Actions notifications to be alerted about deployment status
 
