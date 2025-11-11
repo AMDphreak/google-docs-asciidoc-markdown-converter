@@ -6,7 +6,7 @@ This guide outlines what's required to publish this project as a Google Docs add
 
 Your project is already structured as a Google Apps Script add-on with:
 * `Code.gs` - Main script with conversion functionality
-* `appsscript.json` - Apps Script manifest with OAuth scopes configured
+* `appsscript.json` - Apps Script manifest (OAuth scopes are automatically detected from code)
 
 == CI/CD Setup (Optional but Recommended)
 
@@ -48,9 +48,11 @@ You need to configure the OAuth consent screen in Google Cloud Console:
 * Privacy policy URL (required for public add-ons)
 * Terms of service URL (required for public add-ons)
 * Authorized domains
-* Scopes: Your app already requests:
+* Scopes: Your app will request (automatically detected from code):
 ** `https://www.googleapis.com/auth/documents`
 ** `https://www.googleapis.com/auth/documents.currentonly`
+
+**Note:** Google Apps Script automatically detects required OAuth scopes by analyzing your code. You don't need to explicitly declare them in `appsscript.json`, though you can optionally include them for documentation purposes.
 
 **Steps:**
 1. Go to Google Cloud Console → APIs & Services → OAuth consent screen
@@ -85,12 +87,20 @@ Your `appsscript.json` may need additional fields for marketplace publication:
   "timeZone": "America/New_York",
   "dependencies": {},
   "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8",
-  "oauthScopes": [
-    "https://www.googleapis.com/auth/documents",
-    "https://www.googleapis.com/auth/documents.currentonly"
-  ]
+  "runtimeVersion": "V8"
 }
+```
+
+**Note about OAuth Scopes:**
+* Google Apps Script automatically detects OAuth scopes by analyzing your code
+* You don't need to include `oauthScopes` in `appsscript.json` (it's optional)
+* If you want to explicitly document scopes, you can optionally add:
++
+```json
+"oauthScopes": [
+  "https://www.googleapis.com/auth/documents",
+  "https://www.googleapis.com/auth/documents.currentonly"
+]
 ```
 
 **Consider adding:**
