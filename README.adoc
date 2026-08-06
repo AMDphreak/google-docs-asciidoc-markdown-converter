@@ -1,4 +1,32 @@
+ifndef::env-github[:icons: font]
+:toc: preamble
+:toclevels: 2
+:sectanchors:
+
+ifndef::env-github[]
+image:https://img.shields.io/github/contributors/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Contributors,link=https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/graphs/contributors]
+image:https://img.shields.io/github/forks/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Forks,link=https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/network/members]
+image:https://img.shields.io/github/stars/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Stars,link=https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/stargazers]
+image:https://img.shields.io/github/issues/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Issues,link=https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/issues]
+image:https://img.shields.io/github/license/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[License,link=https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/blob/master/LICENSE]
+endif::[]
+
+ifdef::env-github[]
+image:https://img.shields.io/github/contributors/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Contributors]
+image:https://img.shields.io/github/forks/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Forks]
+image:https://img.shields.io/github/stars/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Stars]
+image:https://img.shields.io/github/issues/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Issues]
+image:https://img.shields.io/github/license/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[License]
+endif::[]
+
 = Markdown/AsciiDoc to Google Docs Converter
+
+A Google Apps Script that converts selected Markdown or AsciiDoc formatted text in Google Docs to native Google Docs formatting.
+
+link:https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/issues[Report Bug] ·
+link:https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/issues[Request Feature]
+
+== About The Project
 
 A Google Apps Script that converts selected Markdown or AsciiDoc formatted text in Google Docs to native Google Docs formatting.
 
@@ -32,9 +60,9 @@ For automated deployment using GitHub Actions, see `CI_CD_GUIDE.adoc` for comple
 2. Go to Extensions → Markdown/AsciiDoc Converter → Convert Selected Text
 3. The script will automatically detect whether the text is Markdown or AsciiDoc and convert it accordingly
 
-== Supported Formatting
+=== Supported Formatting
 
-=== Markdown
+==== Markdown
 
 * Headers: `# Header 1` through `###### Header 6`
 * Bold: `**bold text**` or `__bold text__`
@@ -42,7 +70,7 @@ For automated deployment using GitHub Actions, see `CI_CD_GUIDE.adoc` for comple
 * Code: `` `code` ``
 * Links: `[link text](url)`
 
-=== AsciiDoc
+==== AsciiDoc
 
 * Headers: `= Header 1` through `====== Header 6`
 * Bold: `**bold text**`
@@ -50,12 +78,12 @@ For automated deployment using GitHub Actions, see `CI_CD_GUIDE.adoc` for comple
 * Code: `` `code` `` or ````code````
 * Links: `link:url[text]` or `url[text]`
 
-== Files
+=== Files
 
 * `Code.gs` - Main script file containing all conversion logic
 * `appsscript.json` - Apps Script project configuration
 
-== Documentation
+=== Documentation
 
 * `README.adoc` - This file, basic usage and installation
 * `CI_CD_GUIDE.adoc` - Guide for setting up automated deployment with GitHub Actions
@@ -65,3 +93,9 @@ For automated deployment using GitHub Actions, see `CI_CD_GUIDE.adoc` for comple
 
 MIT License
 
+== Contact
+
+Ryan Johnson — link:https://twitter.com/amdphreak[@amdphreak]
+
+* Project: https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter
+* Site: https://ryanjohnson.dev
