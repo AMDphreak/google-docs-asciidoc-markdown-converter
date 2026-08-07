@@ -3,7 +3,28 @@ ifndef::env-github[:icons: font]
 :toclevels: 2
 :sectanchors:
 
-[[readme-top]]
+ifdef::env-github[]
+++++
+<a id="readme-top"></a>
+<div align="center">
+<a href="https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/graphs/contributors"><img src="https://img.shields.io/github/contributors/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge" alt="Contributors"></a>
+<a href="https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/network/members"><img src="https://img.shields.io/github/forks/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge" alt="Forks"></a>
+<a href="https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/stargazers"><img src="https://img.shields.io/github/stars/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge" alt="Stars"></a>
+<a href="https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/issues"><img src="https://img.shields.io/github/issues/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge" alt="Issues"></a>
+<a href="https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/blob/master/LICENSE"><img src="https://img.shields.io/github/license/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge" alt="License"></a>
+<br />
+<h3 align="center">Markdown/AsciiDoc to Google Docs Converter</h3>
+<p align="center">
+A Google Apps Script that converts selected Markdown or AsciiDoc formatted text in Google Docs to native Google Docs formatting.<br />
+<a href="https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/issues">Report Bug</a>
+&middot;
+<a href="https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/issues">Request Feature</a>
+</p>
+</div>
+++++
+endif::[]
+
+ifndef::env-github[]
 image:https://img.shields.io/github/contributors/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Contributors,link=https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/graphs/contributors]
 image:https://img.shields.io/github/forks/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Forks,link=https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/network/members]
 image:https://img.shields.io/github/stars/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Stars,link=https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/stargazers]
@@ -16,6 +37,8 @@ A Google Apps Script that converts selected Markdown or AsciiDoc formatted text 
 
 link:https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/issues[Report Bug] ·
 link:https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/issues[Request Feature]
+endif::[]
+
 
 == About The Project
 
