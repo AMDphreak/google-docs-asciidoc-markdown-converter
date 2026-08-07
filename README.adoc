@@ -3,21 +3,12 @@ ifndef::env-github[:icons: font]
 :toclevels: 2
 :sectanchors:
 
-ifndef::env-github[]
+[[readme-top]]
 image:https://img.shields.io/github/contributors/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Contributors,link=https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/graphs/contributors]
 image:https://img.shields.io/github/forks/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Forks,link=https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/network/members]
 image:https://img.shields.io/github/stars/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Stars,link=https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/stargazers]
 image:https://img.shields.io/github/issues/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Issues,link=https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/issues]
 image:https://img.shields.io/github/license/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[License,link=https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/blob/master/LICENSE]
-endif::[]
-
-ifdef::env-github[]
-image:https://img.shields.io/github/contributors/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Contributors]
-image:https://img.shields.io/github/forks/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Forks]
-image:https://img.shields.io/github/stars/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Stars]
-image:https://img.shields.io/github/issues/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[Issues]
-image:https://img.shields.io/github/license/AMDphreak/google-docs-asciidoc-markdown-converter.svg?style=for-the-badge[License]
-endif::[]
 
 = Markdown/AsciiDoc to Google Docs Converter
 
@@ -30,12 +21,16 @@ link:https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter/issues
 
 A Google Apps Script that converts selected Markdown or AsciiDoc formatted text in Google Docs to native Google Docs formatting.
 
+link:#readme-top[back to top]
+
 == Features
 
 * Automatically detects Markdown or AsciiDoc format
 * Converts headers, bold, italic, code blocks, and links
 * Appears in the Extensions menu
 * Works with selected text in Google Docs
+
+link:#readme-top[back to top]
 
 == Installation
 
@@ -53,6 +48,8 @@ A Google Apps Script that converts selected Markdown or AsciiDoc formatted text 
 === Automated Installation with CI/CD
 
 For automated deployment using GitHub Actions, see `CI_CD_GUIDE.adoc` for complete setup instructions. This allows you to automatically push code changes to Apps Script when you push to your repository.
+
+link:#readme-top[back to top]
 
 == Usage
 
@@ -89,9 +86,13 @@ For automated deployment using GitHub Actions, see `CI_CD_GUIDE.adoc` for comple
 * `CI_CD_GUIDE.adoc` - Guide for setting up automated deployment with GitHub Actions
 * `PUBLISHING_GUIDE.adoc` - Complete guide for publishing to Google Workspace Marketplace
 
+link:#readme-top[back to top]
+
 == License
 
 MIT License
+
+link:#readme-top[back to top]
 
 == Contact
 
@@ -99,3 +100,5 @@ Ryan Johnson — link:https://twitter.com/amdphreak[@amdphreak]
 
 * Project: https://github.com/AMDphreak/google-docs-asciidoc-markdown-converter
 * Site: https://ryanjohnson.dev
+
+link:#readme-top[back to top]
